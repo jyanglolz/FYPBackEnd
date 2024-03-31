@@ -1,0 +1,18 @@
+<form>
+    {% csrf_token %}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Email Verification</title>
+    </head>
+    <body>
+        <p>Dear {{ user.first_name }},</p>
+        <p>Thank you for signing up with our platform. To complete your signing process, please use the following verification code:</p>
+        <p>Verification Code: <strong>{{ verification_code }}</strong></p>
+        <p>This code will expire in 10 minutes. If you did not request this code, please ignore this email.</p>
+        <p>Best regards,<br>Your Platform Team</p>
+    </body>
+    </html>
+  </form>
