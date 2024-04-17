@@ -11,8 +11,6 @@ urlpatterns = [
     path('signin', views.signin),
     path('gettoken', obtain_auth_token, name='token_obtain_pair'),
     path('accounts/', include('django.contrib.auth.urls')),  # Include Django's built-in authentication URLs
-    path('forgotpassword', views.forgotPassword),
-    path('resetpassword', views.resetPassword),
     path('authenticateuserwithtoken', views.authenticateUserWithToken),
     path('sendverificationemail', views.sendVerificationEmail),
     path('verifyverificationcode', views.verifyVerificationCode),
