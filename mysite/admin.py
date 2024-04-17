@@ -5,7 +5,7 @@ from .models import VerificationCode, Task
 
 
 class VerificationCodeAdmin(admin.ModelAdmin):
-    list_display=['user', 'code','dateSent','expiryDate']
+    list_display=['id','user', 'code','dateSent','expiryDate']
 
 class TaskAdmin(admin.ModelAdmin):
     list_display=['id','title', 'description','createdAt','dueDate','completed','user']
