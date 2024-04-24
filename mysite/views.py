@@ -47,13 +47,12 @@ def signup(request):
     # Hash the password
     data['password'] = make_password(data['password'])
 
-    # Now you can use the mutable data for further processing
+    # Now can use the mutable data for further processing
     serializer = UserSerializer(data=data)
 
     if serializer.is_valid():
         serializer.save()
         return Response({'message': 'User signed up successfully!'}, status=201)
-
     return Response(serializer.errors, status=400)
 
 @api_view(['POST'])
@@ -64,16 +63,14 @@ def adminsignup(request):
     # Hash the password
     data['password'] = make_password(data['password'])
 
-    # Set staff and superuser status to yes
+    # Set staff status to yes
     data['is_staff'] = 'true'
-    # data['is_superuser'] = 'true'
-    # Now you can use the mutable data for further processing
+    # Now can use the mutable data for further processing
     serializer = UserSerializer(data=data)
 
     if serializer.is_valid():
         serializer.save()
         return Response({'message': 'Admin signed up successfully!'}, status=201)
-
     return Response(serializer.errors, status=400)
 
 @api_view(['POST'])
@@ -135,8 +132,7 @@ def verifyVerificationCode(request):
         # Get the verification code and username from the request data
         verification_code = data.get('verification_code')
         username = data.get('username')
-        # print(f"Received verification_code: {verification_code}, username: {username}")
-        # Check if the verification code is valid
+
         try:
             verification_obj = VerificationCode.objects.get(user__username=username, code=verification_code)
 
@@ -144,12 +140,8 @@ def verifyVerificationCode(request):
             if verification_obj.expiryDate >= timezone.now():
                 # Check if the entered verification code matches the stored code
                 if verification_obj.code == verification_code:
-                    # Perform additional actions (e.g., mark email as verified)
-
-                    # Update the user's email verification status
                     UserModel = get_user_model()
                     user = UserModel.objects.get(username=username)
-                    # user.is_email_verified = True  # Assuming you have a field like this, i don have
                     user.save()
 
                     # Delete the used verification code
@@ -251,64 +243,6 @@ def deleteTask(request):
             return JsonResponse({'message': 'Task deleted successfully'}, status=200)
         except Task.DoesNotExist:
             return JsonResponse({'error': 'Task not found'}, status=404)
-    else:
-        return JsonResponse({'error': 'Method not allowed'}, status=405)
-
-def forgotPassword(request):
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        username = request.POST.get('username')
-
-        try:
-            user = User.objects.get(email=email, username=username)
-        except User.DoesNotExist:
-            return JsonResponse({'error': 'User not found'}, status=404)
-
-        # Generate password reset token
-        token_generator = PasswordResetTokenGenerator()
-        uid = urlsafe_base64_encode(force_bytes(user.pk))
-
-        # Build password reset URL
-        reset_url = f"http://localhost:5173/resetpassword/{uid}/{token_generator.make_token(user)}/"
-
-        # Render email template
-        email_subject = 'Reset Your Password'
-        email_message = render_to_string('email/reset_password.html', {'reset_url': reset_url})
-
-        # Send email
-        send_mail(
-            email_subject,
-            email_message,
-            'kongjunyang1@gmail.com',  # Replace with your email address
-            [email],
-            fail_silently=False,
-        )
-
-        return JsonResponse({'message': 'Password reset email sent successfully'}, status=200)
-    else:
-        return JsonResponse({'error': 'Method not allowed'}, status=405)
-
-@csrf_exempt
-def resetPassword(request):
-    if request.method == 'POST':
-        password = request.POST.get('password')
-        confirm_password = request.POST.get('confirm_password')
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-
-        # Validate passwords match
-        if password != confirm_password:
-            return JsonResponse({'error': 'Passwords do not match'}, status=400)
-
-        # Find user by username and email
-        user = get_object_or_404(User, username=username, email=email)
-
-        # Set new hashed password
-        hashed_password = make_password(password)
-        user.password = hashed_password
-        user.save()
-
-        return JsonResponse({'message': 'Password reset successfully'}, status=200)
     else:
         return JsonResponse({'error': 'Method not allowed'}, status=405)
 
