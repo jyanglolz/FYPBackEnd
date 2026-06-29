@@ -52,6 +52,5 @@ python manage.py runserver
 **4. Security Enhancements:**
 
 - Password encryption.
-- 
 - Token-based verification.
 
